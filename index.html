@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consola de Juegos Retro Portátil — Carpeta de Campo | E.E.S.T. N° 2 René Favaloro</title>
+<meta name="description" content="Carpeta de campo del proyecto Consola de Juegos Retro Portátil (Arduino Nano, pantalla TFT ILI9341, Pong, Tetris y Snake). E.E.S.T. N° 2 René Favaloro, Laboratorio de Hardware.">
+<link rel="icon" type="image/png" href="assets/logo.png">
+<style>
+:root{
+  --bg:#ffffff; --panel:#f3f7fa; --text:#1c2733; --muted:#5a6b7b; --line:#c9d6e0;
+  --navy:#0f1b2d; --green:#1e9e5e; --blue:#0b6aa2; --head:#0f1b2d; --headtext:#ffffff; --zebra:#f3f7fa; --total:#e3eef6;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0e1621; --panel:#15212f; --text:#e3eaf1; --muted:#9bacbc; --line:#2a3a4c; --navy:#e3eaf1; --green:#3ccf8a; --blue:#5db4ea; --head:#1c2d42; --headtext:#ffffff; --zebra:#121d2a; --total:#1a2c40;}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+a{color:var(--blue)}
+.topbar{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;gap:12px;padding:10px 24px;background:var(--bg);border-bottom:3px solid var(--green);font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--blue);text-transform:uppercase}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1180px;margin:0 auto;gap:40px;padding:0 24px}
+nav.toc{position:sticky;top:60px;align-self:start;max-height:calc(100vh - 80px);overflow:auto;padding:24px 0}
+nav.toc h2{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+nav.toc ol{list-style:none;margin:0;padding:0}
+nav.toc li{margin:2px 0}
+nav.toc a{display:block;padding:5px 10px;border-left:3px solid transparent;color:var(--text);text-decoration:none;font-size:14px;font-weight:600}
+nav.toc a:hover,nav.toc a.active{border-left-color:var(--green);background:var(--panel);color:var(--blue)}
+nav.toc ol ol a{font-weight:400;font-size:13px;padding-left:24px;color:var(--muted)}
+main{padding:24px 0 60px;min-width:0}
+.cover{border:2px solid var(--navy);border-radius:6px;background:var(--panel);padding:36px 28px;text-align:center;margin-bottom:36px}
+.cover .inst{color:var(--green);font-weight:800;letter-spacing:.1em;font-size:20px;margin:0}
+.cover .lab{color:var(--blue);font-weight:700;letter-spacing:.1em;font-size:13px;margin:6px 0 22px}
+.cover img.logo{width:130px;height:130px}
+.cover .tag{color:var(--muted);font-weight:700;letter-spacing:.3em;font-size:13px;margin:18px 0 6px}
+.cover h1{margin:0 0 8px;font-size:clamp(28px,5vw,42px);color:var(--navy);line-height:1.15}
+.cover .sub{color:var(--muted);margin:0 auto 24px;max-width:560px}
+.cover .data{border-top:4px solid var(--blue);padding-top:20px;text-align:left;max-width:520px;margin:0 auto}
+.cover .data h2{font-size:13px;letter-spacing:.12em;margin:0 0 10px;color:var(--navy)}
+.cover .data p{margin:4px 0}
+.cover .data ul{margin:6px 0 0;padding-left:22px}
+.btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.btn{display:inline-block;padding:9px 18px;border-radius:6px;background:var(--blue);color:#fff;text-decoration:none;font-weight:700;font-size:14px}
+.btn.alt{background:transparent;color:var(--blue);border:2px solid var(--blue)}
+section{margin-top:44px}
+h2.sec{font-size:26px;color:var(--navy);margin:0 0 16px;padding-bottom:6px;border-bottom:3px solid var(--blue)}
+h3{font-size:19px;color:var(--green);margin:26px 0 8px}
+h4{font-size:16px;color:var(--blue);margin:18px 0 6px}
+ul,ol{padding-left:24px}
+li{margin:6px 0}
+code{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-size:.92em}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th{background:var(--head);color:var(--headtext);text-align:left;padding:10px 12px;font-size:13px}
+td{border:1px solid var(--line);padding:9px 12px;vertical-align:middle}
+tbody tr:nth-child(even) td{background:var(--zebra)}
+td.c,th.c{text-align:center} td.r,th.r{text-align:right}
+td img{width:110px;height:auto;border-radius:4px;display:block;margin:auto;background:#fff}
+td small{display:block;color:var(--muted);margin-top:2px}
+.stock{color:var(--green);font-weight:700;font-size:12px}
+tr.total td{background:var(--total)!important;font-weight:800;color:var(--navy);text-align:right}
+.note{font-size:13.5px;font-style:italic;color:var(--muted)}
+.pin{font-weight:700}
+footer{border-top:1px solid var(--line);padding:20px 24px;text-align:center;color:var(--muted);font-size:13px}
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr;gap:0}
+  nav.toc{position:static;max-height:none;padding:16px 0 0;border-bottom:1px solid var(--line)}
+  nav.toc ol ol{display:none}
+  .topbar{padding:10px 14px;font-size:10px}
+}
+@media print{.topbar,nav.toc,.btns{display:none}.layout{display:block}}
+</style>
+</head>
+<body>
+<div class="topbar"><span>Laboratorio de Hardware</span><span>E.E.S.T. N° 2 René Favaloro</span></div>
+
+<div class="layout">
+<nav class="toc" aria-label="Índice">
+  <h2>Índice</h2>
+  <ol>
+    <li><a href="#objetivos">1. Objetivos del Proyecto</a>
+      <ol><li><a href="#obj-general">Objetivo General</a></li><li><a href="#obj-especificos">Objetivos Específicos</a></li></ol></li>
+    <li><a href="#materiales">2. Materiales y Presupuesto</a></li>
+    <li><a href="#software">3. Software y Juegos</a>
+      <ol><li><a href="#menu">Menú principal</a></li><li><a href="#pong">Pong</a></li><li><a href="#tetris">Tetris</a></li><li><a href="#snake">Snake</a></li></ol></li>
+    <li><a href="#armado">4. Armado y Conexiones</a>
+      <ol><li><a href="#spi">4.1 Bus SPI — Display</a></li><li><a href="#buzzer">4.2 Módulo Buzzer</a></li><li><a href="#botonera">4.3 Botonera</a></li></ol></li>
+    <li><a href="#controles">5. Controles por Modo de Uso</a>
+      <ol><li><a href="#c-menus">5.1 Menús</a></li><li><a href="#c-pausa">5.2 Pausa y Game Over</a></li><li><a href="#c-pong">5.3 Modo Pong</a></li><li><a href="#c-tetris">5.4 Modo Tetris</a></li><li><a href="#c-snake">5.5 Modo Snake</a></li><li><a href="#c-resumen">Resumen general</a></li></ol></li>
+  </ol>
+</nav>
+
+<main>
+<header class="cover" id="inicio">
+  <p class="inst">E.E.S.T. N° 2 “RENÉ FAVALORO”</p>
+  <p class="lab">LABORATORIO DE HARDWARE — PROYECTO TECNOLÓGICO</p>
+  <img class="logo" src="assets/logo.png" alt="Logo T2 de la E.E.S.T. N° 2" width="130" height="130">
+  <p class="tag">CARPETA DE CAMPO</p>
+  <h1>Consola de Juegos Retro Portátil</h1>
+  <p class="sub">Sistema portátil con Arduino Nano, pantalla TFT ILI9341 y tres videojuegos programados en C++</p>
+  <div class="data">
+    <h2>DATOS INSTITUCIONALES E INTEGRANTES</h2>
+    <p><strong>Institución:</strong> E.E.S.T. N° 2 René Favaloro</p>
+    <p><strong>Materia:</strong> Laboratorio de Hardware</p>
+    <p><strong>Curso:</strong> 4° 1°</p>
+    <p><strong>Profesor:</strong> Cáceres Alejandro</p>
+    <p><strong>Alumnos:</strong></p>
+    <ul><li>Eleonora Sacchi</li><li>Bianca Volggi</li><li>Palomeque Melanie</li><li>Lorenzo Coronel</li></ul>
+  </div>
+  <div class="btns">
+    <a class="btn" href="docs/Carpeta_de_Campo_Consola_Retro_Portatil.docx" download>Descargar carpeta (Word)</a>
+    <a class="btn alt" href="#objetivos">Ir al contenido</a>
+  </div>
+</header>
+
+<section id="objetivos">
+  <h2 class="sec">1. Objetivos del Proyecto</h2>
+  <h3 id="obj-general">Objetivo General</h3>
+  <p>Diseñar, ensamblar y programar una consola de juegos retro portátil basada en un Arduino Nano (ATmega328P), que integre una pantalla gráfica TFT a color de 240 × 320 píxeles, una botonera física de cinco pulsadores y un emisor de sonido, y que ofrezca un menú principal interactivo con tres videojuegos clásicos (Pong, Tetris y Snake) desarrollados en lenguaje C++.</p>
+  <h3 id="obj-especificos">Objetivos Específicos</h3>
+  <ul>
+    <li><strong>Implementar comunicación SPI de alta velocidad:</strong> vincular el display ILI9341 con el Arduino Nano mediante el bus SPI para renderizar en tiempo real menús, animaciones y escenarios de juego con una tasa de refresco fluida.</li>
+    <li><strong>Aplicar control digital con resistencias pull-up internas:</strong> configurar los cinco pulsadores en modo <code>INPUT_PULLUP</code> (lógica inversa), eliminando la necesidad de resistencias externas y simplificando el cableado.</li>
+    <li><strong>Gestionar memoria no volátil EEPROM:</strong> almacenar y recuperar los puntajes máximos de los juegos en la EEPROM del ATmega328P, de modo que los récords se conserven aunque la consola se apague.</li>
+    <li><strong>Desarrollar la lógica de los juegos:</strong> programar colisiones, rebotes, puntuación, un sistema de pausa y una inteligencia artificial con distintos niveles de dificultad.</li>
+    <li><strong>Aplicar técnicas de prototipado sin soldadura:</strong> organizar las conexiones eléctricas (alimentación y masa común GND) y de señal utilizando cables Dupont de manera ordenada y segura.</li>
+  </ul>
+</section>
+
+<section id="materiales">
+  <h2 class="sec">2. Materiales del Proyecto y Presupuesto</h2>
+  <p>A continuación se detallan los componentes empleados en el armado de la consola, su función específica y su valor estimado en pesos argentinos (ARS):</p>
+  <div class="tw"><table>
+    <thead><tr><th class="c">N°</th><th class="c">Imagen</th><th>Componente y Función</th><th class="c">Cant.</th><th class="c">Precio Unit.</th><th class="r">Subtotal</th></tr></thead>
+    <tbody>
+      <tr><td class="c"><strong>1</strong></td><td><img src="assets/nano.jpg" alt="Arduino Nano" loading="lazy"></td><td><strong>Arduino Nano (ATmega328P)</strong><small>Unidad central de procesamiento y control integral del sistema.</small></td><td class="c">1</td><td class="c stock">En stock / Adquirido previamente</td><td class="r">—</td></tr>
+      <tr><td class="c"><strong>2</strong></td><td><img src="assets/tft.jpg" alt="Display TFT ILI9341" loading="lazy"></td><td><strong>Display LCD Duaitek 240×320 SPI con SD ILI9341</strong> (compatible Arduino TFT-ILI9341)<small>Pantalla gráfica a color para visualizar menús, animaciones y juegos mediante interfaz SPI de alta velocidad.</small></td><td class="c">1</td><td class="c">$ 18.590</td><td class="r"><strong>$ 18.590</strong></td></tr>
+      <tr><td class="c"><strong>3</strong></td><td><img src="assets/buzzer.jpg" alt="Módulo buzzer pasivo" loading="lazy"></td><td><strong>Módulo Buzzer Pasivo 3,3 V a 5 V</strong> (Zumbador Arduino)<small>Emisor de efectos sonoros y alertas auditivas en los juegos y menús.</small></td><td class="c">1</td><td class="c">$ 3.200</td><td class="r"><strong>$ 3.200</strong></td></tr>
+      <tr><td class="c"><strong>4</strong></td><td><img src="assets/pulsadores.jpg" alt="Pulsadores con capuchones de colores" loading="lazy"></td><td><strong>Kit de 25 pulsadores + capuchones de colores</strong> (negro, rojo, azul, blanco, amarillo)<small>Se utilizan 5 pulsadores con capuchones diferenciados como botonera de control físico.</small></td><td class="c">1 kit</td><td class="c">$ 6.000</td><td class="r"><strong>$ 6.000</strong></td></tr>
+      <tr><td class="c"><strong>5</strong></td><td><img src="assets/dupont.jpg" alt="Cables Dupont" loading="lazy"></td><td><strong>Cables Dupont</strong><small>Interconexión eléctrica y de señales entre el Arduino Nano, el display y los periféricos.</small></td><td class="c">Varios</td><td class="c stock">En stock / Adquirido previamente</td><td class="r">—</td></tr>
+      <tr class="total"><td colspan="5">TOTAL GENERAL DEL PROYECTO (ARS)</td><td>$ 27.790</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">Nota: los componentes marcados como “En stock / Adquirido previamente” no se suman al gasto actual. El total corresponde únicamente a los elementos adquiridos para este proyecto: $ 18.590 + $ 3.200 + $ 6.000 = $ 27.790.</p>
+</section>
+
+<section id="software">
+  <h2 class="sec">3. Funcionamiento del Software y Juegos</h2>
+  <p>El software de la consola fue desarrollado en lenguaje C++ mediante el entorno Arduino IDE. Al encender el sistema se muestra un menú principal interactivo desde el cual el jugador navega con los botones de dirección y confirma su elección con el botón central. Desde allí se accede a los tres juegos programados.</p>
+  <h3 id="menu">Menú principal</h3>
+  <p>Presenta las opciones de juego en pantalla a color. El jugador recorre las opciones con los botones Anterior / Siguiente y selecciona con el Botón 3. Cada juego, al finalizar o ser pausado, permite regresar a este menú.</p>
+  <h3 id="pong">Pong</h3>
+  <ul>
+    <li><strong>Modo 1 vs 1:</strong> dos jugadores comparten la botonera y controlan una paleta cada uno.</li>
+    <li><strong>Modo 1 jugador contra Inteligencia Artificial:</strong> la paleta rival es controlada por el programa, con tres niveles de dificultad: <strong>Fácil, Normal y Difícil</strong>.</li>
+  </ul>
+  <h3 id="tetris">Tetris</h3>
+  <ul>
+    <li><strong>Sistema de bolsa de piezas aleatorias (random bag):</strong> las piezas se mezclan en grupos, de modo que todas aparezcan con frecuencia equilibrada y se eviten largas rachas sin una pieza determinada.</li>
+    <li><strong>Persistencia de récords:</strong> el puntaje máximo se guarda en la memoria EEPROM y se conserva al apagar la consola.</li>
+  </ul>
+  <h3 id="snake">Snake</h3>
+  <ul>
+    <li><strong>Velocidad única desafiante:</strong> el juego mantiene un ritmo constante, sin niveles de dificultad.</li>
+    <li><strong>Renderizado optimizado por bloques:</strong> solo se redibujan las celdas que cambian (cabeza, cola y comida) en lugar de la pantalla completa, reduciendo la carga sobre el bus SPI y evitando parpadeos.</li>
+    <li><strong>Memoria EEPROM:</strong> se guardan el puntaje máximo y el resultado de la última partida.</li>
+  </ul>
+</section>
+
+<section id="armado">
+  <h2 class="sec">4. Procedimiento de Armado y Esquema de Conexiones</h2>
+  <p>El montaje se realizó sin soldadura, utilizando cables Dupont, en las siguientes etapas secuenciales dentro del Laboratorio de Hardware:</p>
+  <ol>
+    <li><strong>Preparación y alimentación.</strong> Se dispuso el Arduino Nano y se definieron las líneas comunes de alimentación (VCC) y la masa común (GND) para todos los periféricos, de modo de contar con una referencia de tensión única.</li>
+    <li><strong>Conexión de la pantalla TFT ILI9341 (bus SPI).</strong> Se vincularon los pines de comunicación del display con los pines digitales del Arduino Nano según la tabla 4.1.</li>
+    <li><strong>Conexión del módulo buzzer.</strong> El pin de señal se conectó al pin digital D6 y el otro terminal a GND (tabla 4.2).</li>
+    <li><strong>Montaje de la botonera (5 pulsadores).</strong> Se montaron con configuración <code>INPUT_PULLUP</code> y lógica inversa (tabla 4.3).</li>
+    <li><strong>Verificación de continuidad y revisión del cableado.</strong> Antes de energizar el circuito se revisó cada conexión pin por pin para descartar cortocircuitos entre positivo y masa, o inversiones en las líneas de datos SPI.</li>
+    <li><strong>Pruebas funcionales y carga de código.</strong> Se conectó el Arduino Nano a la computadora por USB y se cargó el sketch desde el Arduino IDE. Se probó la respuesta de los cinco botones, los sonidos del buzzer, el menú principal, los tres juegos, el guardado de récords en EEPROM y el sistema de pausa.</li>
+  </ol>
+
+  <h3 id="spi">4.1 Bus SPI — Display ILI9341</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Elemento</th><th>Pin del Arduino Nano</th><th>Observaciones</th></tr></thead>
+    <tbody>
+      <tr><td class="pin">CS</td><td>D10</td><td>Selección de chip</td></tr>
+      <tr><td class="pin">DC / RS</td><td>D9</td><td>Datos / Comando</td></tr>
+      <tr><td class="pin">RESET</td><td>D8</td><td>Reinicio del display</td></tr>
+      <tr><td class="pin">SDI (MOSI)</td><td>D11</td><td>Datos hacia la pantalla</td></tr>
+      <tr><td class="pin">SCK</td><td>D13</td><td>Reloj SPI</td></tr>
+      <tr><td class="pin">VCC</td><td>Alimentación</td><td>Según especificación del módulo</td></tr>
+      <tr><td class="pin">GND</td><td>GND</td><td>Masa común</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="buzzer">4.2 Módulo Buzzer</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Elemento</th><th>Pin del Arduino Nano</th><th>Observaciones</th></tr></thead>
+    <tbody>
+      <tr><td class="pin">Señal (S)</td><td>D6</td><td>Salida digital de sonido</td></tr>
+      <tr><td class="pin">GND (–)</td><td>GND</td><td>Masa común</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="botonera">4.3 Botonera — 5 pulsadores con INPUT_PULLUP</h3>
+  <p>Los pulsadores se montaron con lógica inversa: un extremo de cada pulsador se conecta al pin digital del Arduino Nano y el otro extremo directamente a GND (masa común). Al activar la resistencia pull-up interna del microcontrolador con <code>INPUT_PULLUP</code>, el pin permanece en <code>HIGH</code> en reposo y pasa a <code>LOW</code> al ser presionado, cerrando el circuito a masa. De esta forma no se necesitan resistencias externas.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Botón</th><th class="c">Pin</th><th>Conexión</th></tr></thead>
+    <tbody>
+      <tr><td class="pin">Botón 1</td><td class="c">D4</td><td>Un extremo al pin D4 — otro extremo a GND</td></tr>
+      <tr><td class="pin">Botón 2</td><td class="c">D5</td><td>Un extremo al pin D5 — otro extremo a GND</td></tr>
+      <tr><td class="pin">Botón 3</td><td class="c">D7</td><td>Un extremo al pin D7 — otro extremo a GND</td></tr>
+      <tr><td class="pin">Botón 4</td><td class="c">D2</td><td>Un extremo al pin D2 — otro extremo a GND</td></tr>
+      <tr><td class="pin">Botón 5</td><td class="c">D3</td><td>Un extremo al pin D3 — otro extremo a GND</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="controles">
+  <h2 class="sec">5. Configuración de Controles por Modo de Uso</h2>
+  <p>La función de cada botón cambia según el contexto en que se encuentra el sistema. Se detallan a continuación los controles de cada modo.</p>
+
+  <h3 id="c-menus">5.1 Menús (Principal y Submenú Pong)</h3>
+  <div class="tw"><table><thead><tr><th>Botón</th><th>Función</th></tr></thead><tbody>
+    <tr><td class="pin">Botón 1</td><td>Anterior / Arriba</td></tr>
+    <tr><td class="pin">Botón 5</td><td>Siguiente / Abajo</td></tr>
+    <tr><td class="pin">Botón 3</td><td>Seleccionar / Confirmar. Mantener 0,5 s en submenús vuelve al menú principal.</td></tr>
+  </tbody></table></div>
+
+  <h3 id="c-pausa">5.2 Sistema de Pausa y Game Over (global)</h3>
+  <div class="tw"><table><thead><tr><th>Botón</th><th>Función</th></tr></thead><tbody>
+    <tr><td class="pin">Botón 3 — en partida (toque corto)</td><td>Pausa o despausa el juego.</td></tr>
+    <tr><td class="pin">Botón 3 — en partida (mantener 0,5 s)</td><td>Congela la partida y vuelve automáticamente al menú principal.</td></tr>
+    <tr><td class="pin">Botón 3 — en Game Over (toque corto)</td><td>Reinicia el mismo juego al instante.</td></tr>
+    <tr><td class="pin">Botón 3 — en Game Over (mantener 0,5 s)</td><td>Regresa al menú principal.</td></tr>
+  </tbody></table></div>
+
+  <h3 id="c-pong">5.3 Modo Pong</h3>
+  <h4>Contra IA</h4>
+  <div class="tw"><table><thead><tr><th>Botón</th><th>Función</th></tr></thead><tbody>
+    <tr><td class="pin">Botón 1</td><td>Bajar paleta P1</td></tr>
+    <tr><td class="pin">Botón 2</td><td>Subir paleta P1</td></tr>
+  </tbody></table></div>
+  <h4>1 vs 1</h4>
+  <div class="tw"><table><thead><tr><th>Botón</th><th>Función</th></tr></thead><tbody>
+    <tr><td class="pin">Botón 1</td><td>Bajar paleta P1</td></tr>
+    <tr><td class="pin">Botón 2</td><td>Subir paleta P1</td></tr>
+    <tr><td class="pin">Botón 4</td><td>Subir paleta P2</td></tr>
+    <tr><td class="pin">Botón 5</td><td>Bajar paleta P2</td></tr>
+  </tbody></table></div>
+
+  <h3 id="c-tetris">5.4 Modo Tetris</h3>
+  <div class="tw"><table><thead><tr><th>Botón</th><th>Función</th></tr></thead><tbody>
+    <tr><td class="pin">Botón 1</td><td>Mover izquierda</td></tr>
+    <tr><td class="pin">Botón 5</td><td>Mover derecha</td></tr>
+    <tr><td class="pin">Botón 2</td><td>Rotar pieza</td></tr>
+    <tr><td class="pin">Botón 4</td><td>Caída rápida</td></tr>
+  </tbody></table></div>
+
+  <h3 id="c-snake">5.5 Modo Snake</h3>
+  <div class="tw"><table><thead><tr><th>Botón</th><th>Función</th></tr></thead><tbody>
+    <tr><td class="pin">Botón 2</td><td>Arriba</td></tr>
+    <tr><td class="pin">Botón 4</td><td>Abajo</td></tr>
+    <tr><td class="pin">Botón 1</td><td>Izquierda</td></tr>
+    <tr><td class="pin">Botón 5</td><td>Derecha</td></tr>
+  </tbody></table></div>
+
+  <h3 id="c-resumen">Resumen general de botones</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Botón</th><th class="c">Pin</th><th>Menús</th><th>Pong</th><th>Tetris</th><th>Snake</th></tr></thead>
+    <tbody>
+      <tr><td class="pin">Botón 1</td><td class="c">D4</td><td>Anterior / Arriba</td><td>Bajar P1</td><td>Mover izq.</td><td>Izquierda</td></tr>
+      <tr><td class="pin">Botón 2</td><td class="c">D5</td><td>—</td><td>Subir P1</td><td>Rotar pieza</td><td>Arriba</td></tr>
+      <tr><td class="pin">Botón 3</td><td class="c">D7</td><td>Seleccionar</td><td>Pausa / Menú</td><td>Pausa / Menú</td><td>Pausa / Menú</td></tr>
+      <tr><td class="pin">Botón 4</td><td class="c">D2</td><td>—</td><td>Subir P2 (1 vs 1)</td><td>Caída rápida</td><td>Abajo</td></tr>
+      <tr><td class="pin">Botón 5</td><td class="c">D3</td><td>Siguiente / Abajo</td><td>Bajar P2 (1 vs 1)</td><td>Mover der.</td><td>Derecha</td></tr>
+    </tbody>
+  </table></div>
+</section>
+</main>
+</div>
+
+<footer>E.E.S.T. N° 2 René Favaloro — Laboratorio de Hardware — 4° 1° — Consola de Juegos Retro Portátil</footer>
+
+<script>
+(function(){
+  var links=[].slice.call(document.querySelectorAll('nav.toc a'));
+  var map={};links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;});
+  if(!('IntersectionObserver' in window))return;
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){links.forEach(function(l){l.classList.remove('active');});
+        var a=map[e.target.id];if(a)a.classList.add('active');}
+    });
+  },{rootMargin:'-70px 0px -70% 0px'});
+  document.querySelectorAll('section[id], h3[id]').forEach(function(s){io.observe(s);});
+})();
+</script>
+</body>
+</html>
